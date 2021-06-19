@@ -52,5 +52,26 @@
         <file>source/help_nor.png</file>
         <file>source/help_pre.png</file>
         <file>source/help.png</file>
+        <file>source/min_hov.png</file>
+        <file>source/min_nor.png</file>
+        <file>source/min_pre.png</file>
+        <file>source/close_hov.png</file>
+        <file>source/close_nor.png</file>
+        <file>source/close_pre.png</file>
+        <file>source/help_hov_.png</file>
+        <file>source/help_nor_.png</file>
+        <file>source/help_pre_.png</file>
+        <file>source/passage.png</file>
+        <file>source/passage_hov.png</file>
+        <file>source/passage_nor.png</file>
+        <file>source/passage_pre.png</file>
+        <file>source/readpassage_hov.png</file>
+        <file>source/readpassage_nor.png</file>
+        <file>source/readpassage_pre.png</file>
+        <file>source/down.png</file>
+        <file>source/up.png</file>
+        <file>source/table_head.png</file>
+        <file>source/returntable.png</file>
+        <file>source/icon.png</file>
     </qresource>
 </RCC>

@@ -72,7 +72,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -90,7 +90,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PassageParser.cpp" />
     <ClCompile Include="ShuffleWordList.cpp" />
+    <ClCompile Include="TitleBar.cpp" />
     <ClCompile Include="WordList.cpp" />
     <ClCompile Include="WrongWordList.cpp" />
     <QtRcc Include="VocabularyIncreaser.qrc" />
@@ -102,7 +104,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyButton.h" />
+    <ClInclude Include="PassageParser.h" />
     <ClInclude Include="ShuffleWordList.h" />
+    <QtMoc Include="TitleBar.h" />
     <ClInclude Include="WordList.h" />
     <ClInclude Include="WrongWordList.h" />
   </ItemGroup>

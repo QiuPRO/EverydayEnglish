@@ -52,6 +52,12 @@
     <ClCompile Include="ShuffleWordList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TitleBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PassageParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyButton.h">
@@ -66,5 +72,13 @@
     <ClInclude Include="ShuffleWordList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PassageParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="TitleBar.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>
