@@ -3,19 +3,32 @@
 VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 {
 	//ui.setupUi(this);
-	setWindowFlags(Qt::CustomizeWindowHint);
+	setWindowFlags(Qt::FramelessWindowHint);
 	setFixedSize(1024, 768);
+
+	//setWindowTitle("Custom Window");
+
+
 	mBtnBook = new MyButton(this,
 		":/VocabularyIncreaser/source/book_nor.png",
 		":/VocabularyIncreaser/source/book_hov.png",
 		":/VocabularyIncreaser/source/book_pre.png",
-		193, 145, 321, 312);
+		193, 145, 226, 312);
 	mBtnWord = new MyButton(this,
 		":/VocabularyIncreaser/source/word_nor.png",
 		":/VocabularyIncreaser/source/word_hov.png",
 		":/VocabularyIncreaser/source/word_pre.png",
-		193, 145, 510, 312);
-
+		193, 145, 415, 312);
+	mBtnPassage = new MyButton(this,
+		":/VocabularyIncreaser/source/passage_nor.png",
+		":/VocabularyIncreaser/source/passage_hov.png",
+		":/VocabularyIncreaser/source/passage_pre.png",
+		193, 145, 604, 312);
+	mBtnReadPassage = new MyButton(this,
+		":/VocabularyIncreaser/source/readpassage_nor.png",
+		":/VocabularyIncreaser/source/readpassage_hov.png",
+		":/VocabularyIncreaser/source/readpassage_pre.png",
+		193, 145, 415, 240);
 	mBtnEng2Chi = new MyButton(this,
 		":/VocabularyIncreaser/source/eng2chi_nor.png",
 		":/VocabularyIncreaser/source/eng2chi_hov.png",
@@ -72,37 +85,44 @@ VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 		":/VocabularyIncreaser/source/dictsub_hov.png",
 		":/VocabularyIncreaser/source/dictsub_pre.png",
 		193, 145, 550, 520);
+	mBtnCloseWordSet = new MyButton(this,
+		":/VocabularyIncreaser/source/return_nor.png",
+		":/VocabularyIncreaser/source/return_hov.png",
+		":/VocabularyIncreaser/source/return_pre.png",
+		193, 145, 831, 623);
 
 	lblQuestion = qlabelInit("<font color=white>Test</font>", "SimHei", 32, 0, 250, true, 1024, 100);
 	lblPro = qlabelInit("<font color=grey>啊啊啊</font>", "SimHei", 24, 0, 330, true, 1024, 100);
 	lblLeftCounter = qlabelInit("<font color=white>" + codec->toUnicode("进度：") 
 		+ QString::number(0) + "/" + QString::number(0) 
-		+ "</font>", "SimHei", 10, 20, 20, false, 1024, 100);
-	lblCurWordList = qlabelInit("<font color=white>" + codec->toUnicode("当前词库：") + "</font>", "SimHei", 10, 20, 40, false, 1024, 100);
-	lblCurSequence = qlabelInit("<font color=white>" + codec->toUnicode("当前排序：顺序")  + "</font>", "SimHei", 10, 20, 60, false, 1024, 100);
-	leDictInput = new QLineEdit();
-	leDictInput->setFixedSize(1024, 100);
-	leDictInput->setParent(this);
-	leDictInput->move(0, 450);
-	leDictInput->setAlignment(Qt::AlignCenter);
-	leDictInput->setPlaceholderText(codec->toUnicode("请在此输入您的答案"));
-	//leDictInput->setStyleSheet("color: white; background-color: rgba(255, 255, 255, 0)");
-	leDictInput->setStyleSheet("QLineEdit{border-top:0px solid #e8f3f9; background:transparent;color:#ffffff;}");
+		+ "</font>", "SimHei", 10, 20, 45, false, 1024, 20);
+	lblCurWordList = qlabelInit("<font color=white>" + codec->toUnicode("当前词库：") + "</font>", "SimHei", 10, 20, 65, false, 1024, 20);
+	lblCurSequence = qlabelInit("<font color=white>" + codec->toUnicode("当前排序：顺序")  + "</font>", "SimHei", 10, 20, 85, false, 1024, 20);
 
-	leDictInput->setFont(QFont("SimHei", 24));
-	leDictInput->hide();
+	leDictInput = qLineEditInit(1024, 100, 0, 450,
+		codec->toUnicode("请在此输入您的答案"),
+		"#ffffff", "SimHei", 24);
 
 	wrongWordList = new WrongWordList();
 	wrongWordListRoot = new WrongWordList();
 	btnMapper = new QSignalMapper(this);
 	mBtnHelp = new MyButton(this,
-		":/VocabularyIncreaser/source/help_nor.png",
-		":/VocabularyIncreaser/source/help_hov.png",
-		":/VocabularyIncreaser/source/help_pre.png",
-		101, 101, 903, 20);
-	mBtnHelpDetail = new MyButton(this,
-		":/VocabularyIncreaser/source/help.png",
-		"", "",	1024, 768, 0, 0);
+		":/VocabularyIncreaser/source/help_nor_.png",
+		":/VocabularyIncreaser/source/help_hov_.png",
+		":/VocabularyIncreaser/source/help_pre_.png",
+		30, 30, 919, 7);
+	mBtnHelpDetail = new MyButton(this, ":/VocabularyIncreaser/source/help.png", "", "", 1024, 768, 0, 0);
+	mBtnReturnTable = new MyButton(this, ":/VocabularyIncreaser/source/returntable.png", "", "", WIDGET_WIDTH, WIDGET_HEIGHT, 0, 0);
+	tblWordCount = new QTableWidget(this);
+	tblWordCount->hide();
+	teSentencesDisplayer = qTextEditInit(
+		TABLE_WIDTH, TABLE_HEIGHT,
+		(WIDGET_WIDTH - TABLE_WIDTH) / 2, 240,
+		"", "#ffffff", "SimHei", 12, false);
+	TitleBar *pTitleBar = new TitleBar(this);
+	installEventFilter(pTitleBar);
+	pTitleBar->setParent(this);
+	pTitleBar->show();
 	for (int i = 0; i < 4; i++)
 	{
 		btnChoices[i] = new QPushButton(this);
@@ -116,10 +136,12 @@ VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 		btnMapper->setMapping(btnChoices[i], i);
 	}
 	connect(btnMapper, SIGNAL(mapped(int)), this, SLOT(getAnswer(int)));
-
+	connect(tblWordCount, SIGNAL(cellClicked(int, int)), this, SLOT(tblWordCountItemClicked(int, int)));
 
 	connect(&mBtnBook->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnBookClicked()));
 	connect(&mBtnWord->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnWordClicked()));
+	connect(&mBtnPassage->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnPassageClicked()));
+	connect(&mBtnReadPassage->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnReadPassageClicked()));
 	connect(&mBtnDict->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnDictClicked()));
 	connect(&mBtnWordRoot->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnWordRootClicked()));
 	connect(&mBtnChi2Eng->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnChi2EngClicked()));
@@ -133,6 +155,8 @@ VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 	connect(&mBtnDictSubmit->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnDictSubmitClicked()));
 	connect(&mBtnHelp->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnHelpClicked()));
 	connect(&mBtnHelpDetail->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnHelpDetailClicked()));
+	connect(&mBtnCloseWordSet->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnCloseWordSetClicked()));
+	connect(&mBtnReturnTable->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnReturnTableClicked()));
 
 
 
@@ -147,15 +171,13 @@ void VocabularyIncreaser::homepageInit()
 	this->setBackground(":/VocabularyIncreaser/source/homepage.png");
 	mBtnBook->show();
 	mBtnWord->show();
+	mBtnPassage->show();
 }
 
 void VocabularyIncreaser::wordPageInit()
 {
 	this->setBackground(":/VocabularyIncreaser/source/wordreci.png");
 
-	//mBtnChi2Eng->setDisabled(false);
-	//mBtnEng2Chi->setDisabled(false);
-	//mBtnDict->setDisabled(false);
 	mBtnHelp->show();
 	mBtnReturnHome->show();
 	mBtnOpenWordList->show();
@@ -204,6 +226,18 @@ void VocabularyIncreaser::wordPageInit()
 
 }
 
+void VocabularyIncreaser::passagePageInit()
+{
+	mBtnReturnHome->show();
+	mBtnReadPassage->show();
+	lblLeftCounter->setText("<font color=white>" + codec->toUnicode("本文词数：") + "</font>");
+	lblLeftCounter->show();
+	lblCurWordList->setText("<font color=white>" + codec->toUnicode("当前文章：") + "</font>");
+	lblCurWordList->show();
+	this->setBackground(":/VocabularyIncreaser/source/passage.png");
+
+}
+
 void VocabularyIncreaser::eng2ChiPageInit()
 {
 	//hideWordPageButtons();
@@ -245,7 +279,6 @@ void VocabularyIncreaser::WordRootPageInit()
 	lblLeftCounter->show();
 	lblCurWordList->show();
 	lblCurSequence->show();
-	// TODO:
 	showEng2ChiNextWord();
 }
 
@@ -262,6 +295,15 @@ void VocabularyIncreaser::dictationPageInit()
 	lblCurSequence->show();
 	leDictInput->show();
 	showChi2EngNextWord();
+}
+
+void VocabularyIncreaser::tablePageInit()
+{
+	lblLeftCounter->setText("<font color=white>" + codec->toUnicode("本文词数：") + QString::number(PassageParser::getParser().getWordCount()) + "</font>");
+	lblLeftCounter->show();
+	lblCurWordList->setText("<font color=white>" + codec->toUnicode("当前文章：") + PassageParser::getParser().getPassagePath() +"</font>");
+	lblCurWordList->show();
+	mBtnCloseWordSet->show();
 }
 
 // Dealing with the jumping between the page.
@@ -286,10 +328,42 @@ QLabel* VocabularyIncreaser::qlabelInit(QString color, QString font, int fontSiz
 	return lbl;
 }
 
+QLineEdit* VocabularyIncreaser::qLineEditInit(int width, int height, int posX, int posY, QString placeholderText, QString backgroundColor, QString font, int fontSize, bool isCentral)
+{
+	QLineEdit* le = new QLineEdit();
+	le->setFixedSize(width, height);
+	le->setParent(this);
+	le->move(posX, posY);
+	if (isCentral)
+		le->setAlignment(Qt::AlignCenter);
+	le->setPlaceholderText(placeholderText);
+	le->setStyleSheet("QLineEdit{border-top:0px solid #e8f3f9; background:transparent;color:" + backgroundColor +";}");
+	le->setFont(QFont(font, fontSize));
+	le->hide();
+	return le;
+}
+
+QTextEdit * VocabularyIncreaser::qTextEditInit(int width, int height, int posX, int posY, QString placeholderText, QString backgroundColor, QString font, int fontSize, bool isCentral)
+{
+	QTextEdit* te = new QTextEdit();
+	te->setReadOnly(true);
+	te->setFixedSize(width, height);
+	te->setParent(this);
+	te->move(posX, posY);
+	if (isCentral)
+		te->setAlignment(Qt::AlignCenter);
+	te->setPlaceholderText(placeholderText);
+	te->setStyleSheet("QLineEdit{border-top:0px solid #e8f3f9; background:transparent;color:" + backgroundColor + ";}");
+	te->setFont(QFont(font, fontSize));
+	te->hide();
+	return te;
+}
+
 void VocabularyIncreaser::hideHomePageButtons()
 {
 	mBtnBook->hide();
 	mBtnWord->hide();
+	mBtnPassage->hide();
 }
 
 void VocabularyIncreaser::hideWordPageButtons()
@@ -311,6 +385,27 @@ void VocabularyIncreaser::hideWordPageButtons()
 
 }
 
+void VocabularyIncreaser::hideWordPageObj()
+{
+	mBtnReturnHome->hide();
+	hideWordPageButtons();
+}
+
+void VocabularyIncreaser::hidePassagePageObj()
+{
+	mBtnReturnHome->hide();
+	mBtnReadPassage->hide();
+	tblWordCount->hide();
+}
+
+void VocabularyIncreaser::hideWordSetPageObj()
+{
+	tblWordCount->hide();
+	mBtnCloseWordSet->hide();
+	lblCurWordList->hide();
+	lblLeftCounter->hide();
+}
+
 void VocabularyIncreaser::hideWordSubPageObj()
 {
 	mBtnReturnWord->hide();
@@ -324,11 +419,8 @@ void VocabularyIncreaser::hideWordSubPageObj()
 	mBtnDictSubmit->hide();
 }
 
-void VocabularyIncreaser::hideWordPageObj()
-{
-	mBtnReturnHome->hide();
-	hideWordPageButtons();
-}
+
+
 
 void VocabularyIncreaser::showBtnChoices()
 {
@@ -415,6 +507,53 @@ void VocabularyIncreaser::reCount()
 	}
 }
 
+void VocabularyIncreaser::tableInit(QStringList header, int rowCount, int ColumnCount)
+{
+	tblWordCount->setFixedSize(TABLE_WIDTH, TABLE_HEIGHT);
+	tblWordCount->move((WIDGET_WIDTH - TABLE_WIDTH) / 2, 240);
+	tblWordCount->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	tblWordCount->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	tblWordCount->setStyleSheet("background-color:rgba(220, 220, 220, 220);");
+
+	tblWordCount->setColumnCount(ColumnCount);
+	tblWordCount->setRowCount(rowCount);
+	tblWordCount->setHorizontalHeaderLabels(header);
+	tblWordCount->setColumnWidth(0, (TABLE_WIDTH - 24) / 2);
+	tblWordCount->setColumnWidth(1, (TABLE_WIDTH - 24) / 2);
+	tblWordCount->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	tblWordCount->setSelectionMode(QAbstractItemView::SingleSelection);
+	tblWordCount->setStyleSheet("QTableWidget::item{background:rgba(154, 218, 255, 200);}");
+	QHeaderView* headerView = tblWordCount->verticalHeader();//m_ItemTable为QTableWidget
+	headerView->setHidden(true);//隐藏tablewidget自带行号列
+	headerView = tblWordCount->horizontalHeader();
+	headerView->setDisabled(true);
+	headerView->setStyleSheet("QHeaderView::section {"
+		"background:rgb(60, 153, 186);color: black;padding-left: 4px;border: 1px solid #6c6ccc;}");        // 整个标题头区域背景色
+	headerView->setFixedHeight(42);
+	headerView->setFont(QFont("SimHei", 14, 1));
+
+	tblWordCount->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"        //垂直滑块整体
+		"background:#EEEEFF;"  //背景色
+		"padding-top:20px;"    //上预留位置（放置向上箭头）
+		"padding-bottom:20px;" //下预留位置（放置向下箭头）
+		"padding-left:2px;"    //左预留位置（美观）
+		"padding-right:2px;"   //右预留位置（美观）
+		"border-left:1px solid #d7d7d7;}"//左分割线
+		"QScrollBar::handle:vertical{"//滑块样式
+		"background:#91a0bb;"  //滑块颜色
+		"border-radius:6px;"   //边角圆润
+		"min-height:80px;}"    //滑块最小高度
+		"QScrollBar::handle:vertical:hover{"//鼠标触及滑块样式
+		"background:#a1b0cc;}" //滑块颜色
+		"QScrollBar::add-line:vertical{"//向下箭头样式
+		"background:url(:/VocabularyIncreaser/source/down.png) center no-repeat;}"
+		"QScrollBar::sub-line:vertical{"//向上箭头样式
+		"background:url(:/VocabularyIncreaser/source/up.png) center no-repeat;}"
+
+	);
+	tblWordCount->setFocusPolicy(Qt::NoFocus);
+}
+
 bool VocabularyIncreaser::readWordList(QString fileName)
 {
 	if (fileName == "")
@@ -450,13 +589,11 @@ bool VocabularyIncreaser::readWordList(QString fileName)
 }
 
 
-#include <qdesktopservices.h>
 // Slots are inplied here.
 void VocabularyIncreaser::mBtnBookClicked() 
 {
 	QString path = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pdf(*.pdf)"));
 	QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-
 }
 
 
@@ -464,6 +601,56 @@ void VocabularyIncreaser::mBtnWordClicked()
 {
 	hideHomePageButtons();
 	wordPageInit();
+}
+
+void VocabularyIncreaser::mBtnPassageClicked()
+{
+	hideHomePageButtons();
+	passagePageInit();
+}
+
+void VocabularyIncreaser::mBtnReadPassageClicked()
+{
+	mBtnCloseWordSet->show();
+	QString passagePath = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("TXT(*.txt)"));
+	if (passagePath == "")
+		return;
+	PassageParser::getParser().setPassagePath(passagePath);
+	QVector<QPair<QString, QVector<int>>> vct = PassageParser::getParser().getWordSet();
+	QStringList header;
+	header << codec->toUnicode("单词") << codec->toUnicode("出现次数");
+	tableInit(header, vct.size(), 2);
+	//int totalWord = 0;
+	for (int i = 0; i < vct.size(); i++)
+	{
+		vct[i].first[0] == '\t' ?
+			tblWordCount->setItem(i, 0, new QTableWidgetItem(vct[i].first.split("\t")[1])) : 
+			tblWordCount->setItem(i, 0, new QTableWidgetItem(vct[i].first));
+		tblWordCount->setItem(i, 1, new QTableWidgetItem(QString::number(vct[i].second.size())));
+		//totalWord += vct[i].second.size();
+	}
+	lblLeftCounter->setText("<font color=white>" + codec->toUnicode("本文词数：") + QString::number(PassageParser::getParser().getWordCount()) + "</font>");
+	lblLeftCounter->show();
+	lblCurWordList->setText("<font color=white>" + codec->toUnicode("当前文章：") + passagePath + "</font>");
+	lblCurWordList->show();
+	hidePassagePageObj();
+	tblWordCount->show();
+
+
+}
+
+void VocabularyIncreaser::mBtnCloseWordSetClicked()
+{
+	hideWordSetPageObj();
+	passagePageInit();
+}
+
+void VocabularyIncreaser::mBtnReturnTableClicked()
+{
+	mBtnReturnTable->hide();
+	teSentencesDisplayer->hide();
+	tablePageInit();
+	tblWordCount->show();
 }
 
 void VocabularyIncreaser::mBtnDictClicked()
@@ -528,9 +715,11 @@ void VocabularyIncreaser::mBtnHelpDetailClicked()
 	wordPageInit();
 }
 
+
 void VocabularyIncreaser::mBtnReturnHomeClicked()
 {
 	hideWordPageObj();
+	hidePassagePageObj();
 	homepageInit();
 }
 
@@ -679,6 +868,54 @@ void VocabularyIncreaser::getAnswer(int i)
 
 	}
 	isEng2Chi ? showEng2ChiNextWord() : showChi2EngNextWord();
+}
+#include "qdebug.h"
+void VocabularyIncreaser::tblWordCountItemClicked(int row, int col)
+{
+	if (col != 0)
+		return;
+	hideWordSetPageObj();
+
+	mBtnReturnTable->show();
+	lblCurWordList->show();
+	lblLeftCounter->show();
+	//leSentencesDisplayer
+	int pre = -1; // 维护是否和前一个句子相同
+	QString displayString = "";
+	QString tmp = "";
+	for (int i = 0; i < PassageParser::getParser().getWordSet()[row].second.size(); i++) 
+	{
+		if (pre != PassageParser::getParser().getWordSet()[row].second[i])
+		{
+			pre = PassageParser::getParser().getWordSet()[row].second[i];
+			displayString += codec->toUnicode("第") + QString::number(pre + 1) + codec->toUnicode("句： ") + "<br>";
+			tmp = PassageParser::getParser().getSentences()[pre];
+			qDebug() << tmp.split(" ")[0].split(",")[0].toLower();
+			qDebug() << PassageParser::getParser().getWordSet()[row].first;
+
+			if ((tmp.split(" ")[0].split(",")[0].toLower() == PassageParser::getParser().getWordSet()[row].first) 
+				|| ((PassageParser::getParser().getWordSet()[row].first.split("\t")[0] == "" )
+				&& (tmp.split(" ")[0].split(",")[0].toLower() == PassageParser::getParser().getWordSet()[row].first.split("\t")[1]))) 
+			{
+				displayString += "<font color=#007acc>" + tmp.mid(0, PassageParser::getParser().getWordSet()[row].first.size()) + "</font>";
+				tmp = tmp.mid(PassageParser::getParser().getWordSet()[row].first.size());
+			}
+			tmp.replace(
+					" " + PassageParser::getParser().getWordSet()[row].first + " ",
+					" <font color=#007acc>" + PassageParser::getParser().getWordSet()[row].first + "</font> ");
+			tmp.replace(
+				" " + PassageParser::getParser().getWordSet()[row].first + ",",
+				" <font color=#007acc>" + PassageParser::getParser().getWordSet()[row].first + "</font>,");
+			tmp.replace(
+				" " + PassageParser::getParser().getWordSet()[row].first + ".",
+				" <font color=#007acc>" + PassageParser::getParser().getWordSet()[row].first + "</font>.");
+			displayString += tmp;
+			if (i != PassageParser::getParser().getWordSet()[row].second.size() - 1)
+				displayString += "<br>";
+		}
+	}
+	teSentencesDisplayer->setText(displayString);
+	teSentencesDisplayer->show();
 }
 
 
