@@ -105,10 +105,17 @@
   <ItemGroup>
     <ClInclude Include="MyButton.h" />
     <ClInclude Include="PassageParser.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ShuffleWordList.h" />
     <QtMoc Include="TitleBar.h" />
     <ClInclude Include="WordList.h" />
     <ClInclude Include="WrongWordList.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VocabularyIncreaser.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="source\EE.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

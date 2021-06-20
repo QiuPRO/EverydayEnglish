@@ -106,12 +106,7 @@ VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 	wrongWordList = new WrongWordList();
 	wrongWordListRoot = new WrongWordList();
 	btnMapper = new QSignalMapper(this);
-	mBtnHelp = new MyButton(this,
-		":/VocabularyIncreaser/source/help_nor_.png",
-		":/VocabularyIncreaser/source/help_hov_.png",
-		":/VocabularyIncreaser/source/help_pre_.png",
-		30, 30, 919, 7);
-	mBtnHelpDetail = new MyButton(this, ":/VocabularyIncreaser/source/help.png", "", "", 1024, 768, 0, 0);
+
 	mBtnReturnTable = new MyButton(this, ":/VocabularyIncreaser/source/returntable.png", "", "", WIDGET_WIDTH, WIDGET_HEIGHT, 0, 0);
 	tblWordCount = new QTableWidget(this);
 	tblWordCount->hide();
@@ -123,6 +118,18 @@ VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 	installEventFilter(pTitleBar);
 	pTitleBar->setParent(this);
 	pTitleBar->show();
+	mBtnHelp = new MyButton(this,
+		":/VocabularyIncreaser/source/help_nor_.png",
+		":/VocabularyIncreaser/source/help_hov_.png",
+		":/VocabularyIncreaser/source/help_pre_.png",
+		30, 30, 919, 7);
+	mBtnHelpDetail = new MyButton(this, ":/VocabularyIncreaser/source/help.png", "", "", 1024, 768, 0, 0);
+	mBtnHelpPassage = new MyButton(this,
+		":/VocabularyIncreaser/source/help_nor_.png",
+		":/VocabularyIncreaser/source/help_hov_.png",
+		":/VocabularyIncreaser/source/help_pre_.png",
+		30, 30, 919, 7);
+	mBtnHelpPassageDetail = new MyButton(this, ":/VocabularyIncreaser/source/helppassage.png", "", "", 1024, 768, 0, 0);
 	for (int i = 0; i < 4; i++)
 	{
 		btnChoices[i] = new QPushButton(this);
@@ -157,6 +164,10 @@ VocabularyIncreaser::VocabularyIncreaser(QWidget *parent) : QMainWindow(parent)
 	connect(&mBtnHelpDetail->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnHelpDetailClicked()));
 	connect(&mBtnCloseWordSet->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnCloseWordSetClicked()));
 	connect(&mBtnReturnTable->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnReturnTableClicked()));
+	connect(&mBtnHelpPassage->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnHelpPassageClicked()));
+	connect(&mBtnHelpPassageDetail->getQButton(), SIGNAL(clicked()), this, SLOT(mBtnHelpPassageDetailClicked()));
+
+
 
 
 
@@ -189,7 +200,7 @@ void VocabularyIncreaser::wordPageInit()
 	lblLeftCounter->show();
 	lblCurWordList->show();
 	lblCurSequence->show();
-	if (curWordList == nullptr)
+	if (curWordList == nullptr || curWordList->getSize() == 0)
 		return;
 	mBtnSequential->show();
 	mBtnRandomly->show();
@@ -230,6 +241,7 @@ void VocabularyIncreaser::passagePageInit()
 {
 	mBtnReturnHome->show();
 	mBtnReadPassage->show();
+	mBtnHelpPassage->show();
 	lblLeftCounter->setText("<font color=white>" + codec->toUnicode("本文词数：") + "</font>");
 	lblLeftCounter->show();
 	lblCurWordList->setText("<font color=white>" + codec->toUnicode("当前文章：") + "</font>");
@@ -393,8 +405,11 @@ void VocabularyIncreaser::hideWordPageObj()
 
 void VocabularyIncreaser::hidePassagePageObj()
 {
+	mBtnHelpPassage->hide();
 	mBtnReturnHome->hide();
 	mBtnReadPassage->hide();
+	lblCurWordList->hide();
+	lblLeftCounter->hide();
 	tblWordCount->hide();
 }
 
@@ -436,7 +451,7 @@ void VocabularyIncreaser::hideBtnChoices()
 
 bool VocabularyIncreaser::checkHasWordList()
 {
-	return curWordList != nullptr;
+	return curWordList != nullptr && curWordList->getSize();
 }
 
 void VocabularyIncreaser::showEng2ChiNextWord()
@@ -558,7 +573,6 @@ bool VocabularyIncreaser::readWordList(QString fileName)
 {
 	if (fileName == "")
 		return false;
-	QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("词库加载成功！"), QMessageBox::Ok, QMessageBox::Ok);
 
 	if (curWordList == nullptr)
 	{
@@ -567,6 +581,10 @@ bool VocabularyIncreaser::readWordList(QString fileName)
 	curWordList->clear();
 	curWordList->clearCount();
 	int status = curWordList->readTXT(fileName);
+	if (curWordList->getSize())
+		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("词库加载成功！"), QMessageBox::Ok, QMessageBox::Ok);
+	else
+		return false;
 	if (status == ReadFileStatus::ROOT_FILE) 
 	{
 		isRoot = true;
@@ -611,10 +629,15 @@ void VocabularyIncreaser::mBtnPassageClicked()
 
 void VocabularyIncreaser::mBtnReadPassageClicked()
 {
-	mBtnCloseWordSet->show();
 	QString passagePath = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("TXT(*.txt)"));
 	if (passagePath == "")
+	{
+		QMessageBox::warning(this, codec->toUnicode("提示"), codec->toUnicode("打开文章失败，请重新打开！"), QMessageBox::Ok, QMessageBox::Ok);
 		return;
+	}
+	QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("文章分析成功！"), QMessageBox::Ok, QMessageBox::Ok);	
+
+	mBtnCloseWordSet->show();
 	PassageParser::getParser().setPassagePath(passagePath);
 	QVector<QPair<QString, QVector<int>>> vct = PassageParser::getParser().getWordSet();
 	QStringList header;
@@ -626,14 +649,17 @@ void VocabularyIncreaser::mBtnReadPassageClicked()
 		vct[i].first[0] == '\t' ?
 			tblWordCount->setItem(i, 0, new QTableWidgetItem(vct[i].first.split("\t")[1])) : 
 			tblWordCount->setItem(i, 0, new QTableWidgetItem(vct[i].first));
+		tblWordCount->item(i, 0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 		tblWordCount->setItem(i, 1, new QTableWidgetItem(QString::number(vct[i].second.size())));
+		tblWordCount->item(i, 1)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
 		//totalWord += vct[i].second.size();
 	}
+	hidePassagePageObj();
 	lblLeftCounter->setText("<font color=white>" + codec->toUnicode("本文词数：") + QString::number(PassageParser::getParser().getWordCount()) + "</font>");
 	lblLeftCounter->show();
 	lblCurWordList->setText("<font color=white>" + codec->toUnicode("当前文章：") + passagePath + "</font>");
 	lblCurWordList->show();
-	hidePassagePageObj();
 	tblWordCount->show();
 
 
@@ -653,11 +679,23 @@ void VocabularyIncreaser::mBtnReturnTableClicked()
 	tblWordCount->show();
 }
 
+void VocabularyIncreaser::mBtnHelpPassageClicked()
+{
+	hidePassagePageObj();
+	mBtnHelpPassageDetail->show();
+}
+
+void VocabularyIncreaser::mBtnHelpPassageDetailClicked()
+{
+	mBtnHelpPassageDetail->hide();
+	passagePageInit();
+}
+
 void VocabularyIncreaser::mBtnDictClicked()
 {
 	if (!checkHasWordList())
 	{
-		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库"), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库，或检查词库格式是否正确"), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 	reCount();
@@ -669,7 +707,7 @@ void VocabularyIncreaser::mBtnChi2EngClicked()
 {
 	if (!checkHasWordList())
 	{
-		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库"), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库，或检查词库格式是否正确"), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 	reCount();
@@ -682,7 +720,7 @@ void VocabularyIncreaser::mBtnEng2ChiClicked()
 {
 	if (!checkHasWordList())
 	{
-		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库"), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库，或检查词库格式是否正确"), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 	reCount();
@@ -733,7 +771,7 @@ void VocabularyIncreaser::mBtnReturnWordClicked()
 void VocabularyIncreaser::mBtnOpenWordListClicked()
 {
 	fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("text(*.txt)"));
-	if (readWordList(fileName)) {
+	if (readWordList(fileName) && curWordList->getSize()) {
 		//QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("词库加载成功！"), QMessageBox::Ok, QMessageBox::Ok);
 		lblCurWordList->setText("<font color=white>" + codec->toUnicode("当前词库：") + fileName + "</font>");
 		lblLeftCounter->setText("<font color=white>" + codec->toUnicode("进度：") +
@@ -783,7 +821,7 @@ void VocabularyIncreaser::mBtnSequentialClicked()
 {
 	if (!checkHasWordList())
 	{
-		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库"), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库，或检查词库格式是否正确"), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 	if (!curWordList->isSequential()) 
@@ -805,7 +843,7 @@ void VocabularyIncreaser::mBtnRandomlyClicked()
 {
 	if (!checkHasWordList())
 	{
-		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库"), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::information(this, codec->toUnicode("提示"), codec->toUnicode("请先选择一个词库，或检查词库格式是否正确"), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 	if (curWordList->isSequential()) {

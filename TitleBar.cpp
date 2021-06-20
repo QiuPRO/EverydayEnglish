@@ -26,8 +26,9 @@ TitleBar::TitleBar(QWidget *parent)
 	tmp3 = "QPushButton:pressed{border-image: url(:/VocabularyIncreaser/source/close_pre.png)}";
 	m_pCloseButton->setStyleSheet(tmp1 + tmp2 + tmp3);
 
-	m_pIconLabel->setFixedSize(20, 20);
+	m_pIconLabel->setFixedSize(25, 25);
 	m_pIconLabel->setScaledContents(true);
+	//m_pIconLabel->move(5, 50);
 
 	m_pTitleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -52,7 +53,7 @@ TitleBar::TitleBar(QWidget *parent)
 	//pLayout->addWidget(m_pMaximizeButton);
 	pLayout->addWidget(m_pCloseButton);
 	pLayout->setSpacing(5);
-	pLayout->setContentsMargins(5, 5, 5, 5);
+	pLayout->setContentsMargins(8, 5, 5, 5);
 
 	setLayout(pLayout);
 

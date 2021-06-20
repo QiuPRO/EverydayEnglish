@@ -73,5 +73,7 @@
         <file>source/table_head.png</file>
         <file>source/returntable.png</file>
         <file>source/icon.png</file>
+        <file>source/helppassage.png</file>
+        <file>source/EE.ico</file>
     </qresource>
 </RCC>

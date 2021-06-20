@@ -47,6 +47,8 @@ private:
 	MyButton* mBtnReadPassage;	
 	MyButton* mBtnCloseWordSet;
 	MyButton* mBtnReturnTable;	// 关闭查看句子
+	MyButton* mBtnHelpPassage;
+	MyButton* mBtnHelpPassageDetail;
 
 	QLabel *lblQuestion;
 	QLabel *lblPro;
@@ -150,6 +152,8 @@ public slots:
 	void mBtnReadPassageClicked();
 	void mBtnCloseWordSetClicked();
 	void mBtnReturnTableClicked();
+	void mBtnHelpPassageClicked();
+	void mBtnHelpPassageDetailClicked();
 	void getAnswer(int i);
 	void tblWordCountItemClicked(int row, int col);
 };
